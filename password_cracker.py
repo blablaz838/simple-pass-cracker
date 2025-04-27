@@ -1,39 +1,53 @@
 import itertools
 import time
 
-# Brute-force password cracking function
-def brute_force(target_password):
-    # Define the character set: lowercase, uppercase, and digits
-    chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    
-    # Start with length 1 and increment as needed
-    length = 1
-    
-    while True:
-        # Generate all possible combinations for the given length
-        for attempt in itertools.product(chars, repeat=length):
-            # Join the tuple into a string to form the current guess
-            guess = ''.join(attempt)
-            print(f"Trying: {guess}")  # Show the current attempt
+# -------------- Configuration --------------
 
-            # If the guess matches the target password, return it
+# Le mot de passe à trouver
+target_password = "salmaguenin250110"
+
+# Si tu connais une partie du mot de passe (ex: "salmaguenin")
+known_word_part = "salmaguenin"
+
+# Jeu de caractères à utiliser (minuscules + chiffres uniquement)
+chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+# -------------- Mode 1: Intelligent Bruteforce --------------
+
+def smart_brute_force(word_part):
+    print("\n[+] Starting smart brute-force (word + numbers)...")
+    for number in range(0, 1000000):  # de 000000 à 999999
+        number_str = f"{number:06d}"  # format 6 chiffres, ex: '000001'
+        guess = word_part + number_str
+        print(f"Trying: {guess}")
+        
+        if guess == target_password:
+            return guess
+    return None
+
+# -------------- Mode 2: Full Bruteforce (lent) --------------
+
+def full_brute_force(chars):
+    print("\n[+] Starting full brute-force (all combinations)...")
+    length = 1
+    while True:
+        for attempt in itertools.product(chars, repeat=length):
+            guess = ''.join(attempt)
+            print(f"Trying: {guess}")
+
             if guess == target_password:
                 return guess
-        
-        # Increase the length to check for longer passwords
         length += 1
 
-# Main function to run the script
-if __name__ == "__main__":
-    target = "abc123"  # Change this to the password you want to crack
-    print("Starting brute-force...")
+# -------------- Main Program --------------
 
-    # Record the start time to calculate how long the cracking takes
+if __name__ == "__main__":
+    print(f"Target password to crack: {target_password}")
     start_time = time.time()
 
-    # Call the brute_force function to start cracking the password
-    result = brute_force(target)
-    
-    # Print the cracked password and the time it took
-    print(f"Password cracked: {result}")
-    print(f"Time taken: {time.time() - start_time} seconds")
+    # 1. Essayer l'attaque intelligente d'abord
+    result = smart_brute_force(known_word_part)
+
+    # 2. Si pas trouvé, faire un bruteforce total
+    if result is None:
+        print("\n[-] Smart attack failed. Starting full
